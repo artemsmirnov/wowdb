@@ -1,0 +1,4 @@
+[submodule "lib/duktape"]
+	path = lib/duktape
+	url = git@github.com:svaarala/duktape-releases.git
+	branch = v1.5.0
