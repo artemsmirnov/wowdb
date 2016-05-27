@@ -26,6 +26,23 @@ namespace wow {
         root.ensure();
     }
 
+    std::string store::execute(std::string code, std::string params) {
+        duk_context *ctx = duk_create_heap_default();
+        duk_eval_string(ctx, code.c_str());
+
+        duk_push(ctx);
+        root().duk_push(ctx);
+
+        duk_push_string(ctx, params.c_str());
+        duk_json_decode(ctx, -1);
+
+        duk_call(ctx, 3);
+        std::string res = duk_json_encode(ctx, -1);
+        duk_destroy_heap(ctx);
+
+        return res;
+    }
+
     object store::createObject() const {
         object obj(db);
         obj.ensure();

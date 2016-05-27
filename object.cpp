@@ -1,8 +1,6 @@
 #include "object.h"
 #include "utils.h"
 
-#include <iostream>
-
 namespace wow {
     // duktape adapter
     object duk_get_this_object(duk_context *ctx) {
