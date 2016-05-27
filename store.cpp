@@ -22,6 +22,18 @@ namespace wow {
 
     store::store(leveldb::DB* _db) {
         db = _db;
+
+        object root(db, "root");
+        root.ensure();
+    }
+
+    store::store(std::string path) {
+        leveldb::DB* db;
+        leveldb::Options options;
+        options.create_if_missing = true;
+        leveldb::Status status = leveldb::DB::Open(options, "/tmp/testwow1", &db);
+        assert(status.ok());
+
         object root(db, "root");
         root.ensure();
     }
