@@ -1,14 +1,22 @@
 #include "utils.h"
 #include "string.h"
 #include "object.h"
+#include "number.h"
 #include "undefined.h"
 
 namespace wow {
     value* duk_get_value(leveldb::DB* db, duk_context *ctx, int idx) {
         if (duk_check_type(ctx, idx, DUK_TYPE_STRING)) {
-            const char *raw_str = duk_get_string(ctx, -1);
+            const char *raw_str = duk_get_string(ctx, idx);
             string* val = new string(db);
             val->set_value(raw_str);
+            return val;
+        }
+
+        if (duk_check_type(ctx, idx, DUK_TYPE_NUMBER)) {
+            double num = duk_get_number(ctx, idx);
+            number* val = new number(db);
+            val->set_value(num);
             return val;
         }
 
@@ -16,7 +24,7 @@ namespace wow {
             // @TODO check .type property
 
             duk_get_prop_string(ctx, idx, "id");
-            const char *id = duk_get_string(ctx, -1);
+            const char *id = duk_get_string(ctx, idx);
 
             duk_get_prop_string(ctx, idx-1, "db");
             leveldb::DB* db = (leveldb::DB*) duk_get_pointer(ctx, -1);
@@ -33,10 +41,12 @@ namespace wow {
         std::string type_value;
         db->Get(leveldb::ReadOptions(), value_id + "$$type", &type_value);
 
-        value_type *type = (wow::value_type*)type_value.c_str();
+        value_type *type = (wow::value_type*)type_value.c_str();  // @TODO maybe we need free there
         switch(*type) {
             case value_string:
                 return new string(db, value_id);
+            case value_number:
+                return new number(db, value_id);
             case value_object:
                 return new object(db, value_id);
             default:

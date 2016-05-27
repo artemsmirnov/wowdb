@@ -9,7 +9,7 @@ include(CMake/duktape.cmake)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp object.cpp object.h string.cpp string.h value.cpp value.h store.cpp store.h utils.cpp utils.h undefined.cpp undefined.h)
+set(SOURCE_FILES main.cpp object.cpp object.h string.cpp string.h value.cpp value.h store.cpp store.h utils.cpp utils.h undefined.cpp undefined.h number.cpp number.h)
 
 add_executable(wowdb ${SOURCE_FILES})
 target_link_libraries(wowdb duktape leveldb uuid)

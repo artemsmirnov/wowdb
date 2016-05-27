@@ -8,8 +8,7 @@ namespace wow {
     enum value_type {
         value_object = 0,
         value_array = 1,
-        value_int = 2,
-        value_double = 3,
+        value_number = 2,
         value_string = 4
     };
 
