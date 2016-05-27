@@ -2,6 +2,7 @@
 #define WOWDB_OBJECT_H
 
 #include <string>
+#include <vector>
 #include "leveldb/db.h"
 #include "value.h"
 #include "string.h"
@@ -12,6 +13,7 @@ namespace wow {
         object(leveldb::DB*);
         object(leveldb::DB*, const std::string);
         value* get(const std::string) const;
+        std::vector<std::string> keys() const;
         //bool has(const std::string);
         void put(const std::string, value*);
         void remove(const std::string) const;

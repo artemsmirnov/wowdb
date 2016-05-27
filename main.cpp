@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     wow::store str(db);
 
     duk_context *ctx = duk_create_heap_default();
-    duk_eval_string(ctx, "(function(store, root, params){var a=store.object();a.put('foo','bar'); a.put('a', 2); root.put('baz', a); return [root.get('baz').get('foo'), root.get('baz').get('a')];})");
+    duk_eval_string(ctx, "(function(store, root, params){var a=store.object();a.put('foo','bar'); a.put('a', 2); root.put('baz', a); return [root.get('baz').get('foo'), root.get('baz').get('a'), root.keys()];})");
 
     str.duk_push(ctx);
     str.root().duk_push(ctx);

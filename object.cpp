@@ -1,6 +1,8 @@
 #include "object.h"
 #include "utils.h"
 
+#include <iostream>
+
 namespace wow {
     // duktape adapter
     object duk_get_this_object(duk_context *ctx) {
@@ -30,6 +32,21 @@ namespace wow {
         return 1;
     }
 
+    duk_ret_t duk_object_keys(duk_context *ctx) {
+        object obj = duk_get_this_object(ctx);
+        auto keys = obj.keys();
+
+        duk_idx_t arr_idx = duk_push_array(ctx);
+
+        duk_uarridx_t i = 0;
+        for (std::string key : keys) {
+            duk_push_string(ctx, key.c_str());
+            duk_put_prop_index(ctx, arr_idx, i++);
+        }
+
+        return 1;
+    }
+
     duk_ret_t duk_object_put(duk_context *ctx) {
         object obj = duk_get_this_object(ctx);
 
@@ -52,6 +69,7 @@ namespace wow {
 
     const duk_function_list_entry wow_object_methods[] = {
             { "get", duk_object_get, 1 },
+            { "keys", duk_object_keys, 0 },
             { "put", duk_object_put, 2 },
             { "has", duk_object_has, 1 },
             { "remove", duk_object_remove, 1 },
@@ -73,6 +91,30 @@ namespace wow {
         std::string value_id;
         leveldb::Status s = db->Get(leveldb::ReadOptions(), id + "." + key, &value_id);
         return get_value_by_id(db, value_id);
+    }
+
+    std::vector<std::string> object::keys() const {
+        leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
+
+        std::string start = id + ".";
+        std::string end = id + "/";
+
+        std::vector<std::string> keys;
+
+        // hack
+        if (id == "root") {
+            for (it->Seek(start); it->Valid() && it->key().ToString() < end; it->Next()) {
+                keys.push_back(it->key().ToString().substr(5)); // because of uuid length
+            }
+
+            return keys;
+        }
+
+        for (it->Seek(start); it->Valid() && it->key().ToString() < end; it->Next()) {
+            keys.push_back(it->key().ToString().substr(37)); // because of uuid length
+        }
+
+        return keys;
     }
 
     void object::put(const std::string key, value* val) {
