@@ -1,4 +1,5 @@
 #include "object.h"
+#include "utils.h"
 
 namespace wow {
     // duktape adapter
@@ -17,29 +18,6 @@ namespace wow {
         return object(db, id);
     }
 
-    value* duk_get_value(leveldb::DB* db, duk_context *ctx, int idx) {
-        if (duk_check_type(ctx, idx, DUK_TYPE_STRING)) {
-            const char *raw_str = duk_get_string(ctx, -1);
-            string* val = new string(db);
-            val->set_value(raw_str);
-            return val;
-        }
-
-        if (duk_check_type(ctx, idx, DUK_TYPE_OBJECT)) {
-            // @TODO check .type property
-
-            duk_get_prop_string(ctx, idx, "id");
-            const char *id = duk_get_string(ctx, -1);
-
-            duk_get_prop_string(ctx, idx-1, "db");
-            leveldb::DB* db = (leveldb::DB*) duk_get_pointer(ctx, -1);
-
-            duk_pop_2(ctx); // [key]
-
-            return new object(db, id);
-        }
-    }
-
     duk_ret_t duk_object_get(duk_context *ctx) {
         object obj = duk_get_this_object(ctx);
         const char *key = duk_get_string(ctx, -1);
@@ -52,7 +30,7 @@ namespace wow {
         return 1;
     }
 
-    duk_ret_t wow_object_put(duk_context *ctx) {
+    duk_ret_t duk_object_put(duk_context *ctx) {
         object obj = duk_get_this_object(ctx);
 
         const char *key = duk_get_string(ctx, -2);
@@ -62,21 +40,21 @@ namespace wow {
         return 0;
     }
 
-    duk_ret_t wow_object_has(duk_context *ctx) {
+    duk_ret_t duk_object_has(duk_context *ctx) {
         duk_push_number(ctx, 10);
         return 1;
     }
 
-    duk_ret_t wow_object_remove(duk_context *ctx) {
+    duk_ret_t duk_object_remove(duk_context *ctx) {
         duk_push_number(ctx, 10);
         return 1;
     }
 
     const duk_function_list_entry wow_object_methods[] = {
             { "get", duk_object_get, 1 },
-            { "put", wow_object_put, 2 },
-            { "has", wow_object_has, 1 },
-            { "remove", wow_object_remove, 1 },
+            { "put", duk_object_put, 2 },
+            { "has", duk_object_has, 1 },
+            { "remove", duk_object_remove, 1 },
             { NULL, NULL, 0 }
     };
 
@@ -91,18 +69,7 @@ namespace wow {
         std::string value_id;
         leveldb::Status s = db->Get(leveldb::ReadOptions(), id + "." + key, &value_id);
 
-        // determine by type value concrete class
-
-        std::string type_value;
-        db->Get(leveldb::ReadOptions(), value_id + "$$type", &type_value);
-
-        value_type *type = (wow::value_type*)type_value.c_str();
-        switch(*type) {
-            case value_string:
-                return new string(db, value_id);
-            case value_object:
-                return new object(db, value_id);
-        }
+        return get_value_by_id(db, value_id);
     }
 
     void object::put(const std::string key, value* val) const {
