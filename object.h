@@ -9,10 +9,11 @@
 namespace wow {
     class object : public value {
     public:
+        object(leveldb::DB*);
         object(leveldb::DB*, const std::string);
         value* get(const std::string) const;
         //bool has(const std::string);
-        void put(const std::string, value*) const;
+        void put(const std::string, value*);
         void remove(const std::string) const;
 
         void destroy();

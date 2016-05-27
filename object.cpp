@@ -65,15 +65,19 @@ namespace wow {
         id = _id;
     }
 
+    object::object(leveldb::DB* _db) {
+        db = _db;
+    }
+
     value* object::get(std::string key) const {
         std::string value_id;
         leveldb::Status s = db->Get(leveldb::ReadOptions(), id + "." + key, &value_id);
-
         return get_value_by_id(db, value_id);
     }
 
-    void object::put(const std::string key, value* val) const {
-        get(key)->destroy();
+    void object::put(const std::string key, value* val) {
+        ensure();
+        //get(key)->destroy();
         val->ensure();
         db->Put(leveldb::WriteOptions(), id+"."+key, val->get_id());
     }

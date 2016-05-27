@@ -2,6 +2,7 @@
 #include "value.h"
 #include <uuid/uuid.h>
 
+#include <iostream>
 namespace wow {
     std::string generate_uuid() {
         uuid_t uuid;

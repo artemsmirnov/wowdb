@@ -9,6 +9,7 @@ namespace wow {
     class store {
     public:
         store(leveldb::DB*);
+        object createObject() const;
         object root() const;
         void duk_push(duk_context *ctx) const;
     private:
