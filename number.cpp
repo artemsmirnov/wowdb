@@ -6,7 +6,8 @@ namespace wow {
         id = _id;
         db = _db;
         std::string raw_val;
-        db->Get(leveldb::ReadOptions(), id, &raw_val);
+        leveldb::Status s = db->Get(leveldb::ReadOptions(), id, &raw_val);
+        assert(s.ok());
         val = *(double*)raw_val.c_str(); // @TODO maybe we need free there
     }
 
@@ -15,25 +16,29 @@ namespace wow {
     }
 
     void number::destroy() {
-        db->Delete(leveldb::WriteOptions(), id);
-        db->Delete(leveldb::WriteOptions(), id+"$$type");
+        leveldb::Status s = db->Delete(leveldb::WriteOptions(), id);
+        assert(s.ok());
+        s = db->Delete(leveldb::WriteOptions(), id+"$$type");
+        assert(s.ok());
     }
 
     void number::ensure() {
         ensure_id();
 
         value_type number_type = value_number;
-        db->Put(
+        leveldb::Status s = db->Put(
                 leveldb::WriteOptions(),
                 id + "$$type",
                 leveldb::Slice((const char*)&number_type, sizeof(number_type))
         );
+        assert(s.ok());
 
-        db->Put(
+        s = db->Put(
                 leveldb::WriteOptions(),
                 id,
                 leveldb::Slice((const char*)&val, sizeof(val))
         );
+        assert(s.ok());
     }
 
     void number::set_value(double _val) {

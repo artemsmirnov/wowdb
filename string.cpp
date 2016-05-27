@@ -5,7 +5,8 @@ namespace wow {
     string::string(leveldb::DB *_db, std::string _id) {
         id = _id;
         db = _db;
-        db->Get(leveldb::ReadOptions(), id, &val);
+        leveldb::Status s = db->Get(leveldb::ReadOptions(), id, &val);
+        assert(s.ok());
     }
 
     string::string(leveldb::DB *_db) {
@@ -13,25 +14,29 @@ namespace wow {
     }
 
     void string::destroy() {
-        db->Delete(leveldb::WriteOptions(), id);
-        db->Delete(leveldb::WriteOptions(), id+"$$type");
+        leveldb::Status s = db->Delete(leveldb::WriteOptions(), id);
+        assert(s.ok());
+        s = db->Delete(leveldb::WriteOptions(), id+"$$type");
+        assert(s.ok());
     }
 
     void string::ensure() {
         ensure_id();
 
         value_type string_type = value_string;
-        db->Put(
+        leveldb::Status s = db->Put(
                 leveldb::WriteOptions(),
                 id + "$$type",
                 leveldb::Slice((const char*)&string_type, sizeof(string_type))
         );
+        assert(s.ok());
 
-        db->Put(
+        s = db->Put(
                 leveldb::WriteOptions(),
                 id,
                 val
         );
+        assert(s.ok());
     }
 
     void string::set_value(std::string _val) {

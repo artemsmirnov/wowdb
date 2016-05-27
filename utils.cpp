@@ -39,7 +39,8 @@ namespace wow {
 
     value* get_value_by_id(leveldb::DB* db, std::string value_id) {
         std::string type_value;
-        db->Get(leveldb::ReadOptions(), value_id + "$$type", &type_value);
+        leveldb::Status s = db->Get(leveldb::ReadOptions(), value_id + "$$type", &type_value);
+        assert(s.ok());
 
         value_type *type = (wow::value_type*)type_value.c_str();  // @TODO maybe we need free there
         switch(*type) {

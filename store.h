@@ -10,6 +10,7 @@ namespace wow {
     public:
         store(leveldb::DB*);
         store(std::string path);
+        ~store();
         std::string execute(std::string code, std::string params);
         object createObject() const;
         object root() const;

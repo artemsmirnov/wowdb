@@ -1,5 +1,7 @@
 #include "object.h"
 #include "utils.h"
+#include "undefined.h"
+#include <iostream>
 
 namespace wow {
     // duktape adapter
@@ -88,6 +90,10 @@ namespace wow {
     value* object::get(std::string key) const {
         std::string value_id;
         leveldb::Status s = db->Get(leveldb::ReadOptions(), id + "." + key, &value_id);
+        if (s.IsNotFound()) {
+            return new undefined();
+        }
+        assert(s.ok());
         return get_value_by_id(db, value_id);
     }
 
@@ -119,12 +125,14 @@ namespace wow {
         ensure();
         get(key)->destroy();
         val->ensure();
-        db->Put(leveldb::WriteOptions(), id+"."+key, val->get_id());
+        leveldb::Status s = db->Put(leveldb::WriteOptions(), id+"."+key, val->get_id());
+        assert(s.ok());
     }
 
     void object::remove(const std::string key) const {
         get(key)->destroy();
-        db->Delete(leveldb::WriteOptions(), id+"."+key);
+        leveldb::Status s = db->Delete(leveldb::WriteOptions(), id+"."+key);
+        assert(s.ok());
     }
 
     void object::destroy() {
@@ -136,13 +144,15 @@ namespace wow {
 
     void object::ensure() {
         ensure_id();
-
         value_type object_type = value_object;
-        db->Put(
+
+        leveldb::Status s = db->Put(
                 leveldb::WriteOptions(),
                 id + "$$type",
                 leveldb::Slice((const char*)&object_type, sizeof(object_type))
         );
+        if (!s.ok()) std::cerr << s.ToString() << std::endl;
+        assert(s.ok());
     }
 
     leveldb::DB* object::get_db() const {

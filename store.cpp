@@ -28,14 +28,17 @@ namespace wow {
     }
 
     store::store(std::string path) {
-        leveldb::DB* db;
         leveldb::Options options;
         options.create_if_missing = true;
-        leveldb::Status status = leveldb::DB::Open(options, "/tmp/testwow1", &db);
+        leveldb::Status status = leveldb::DB::Open(options, path, &db);
         assert(status.ok());
 
         object root(db, "root");
         root.ensure();
+    }
+
+    store::~store() {
+        delete db;
     }
 
     std::string store::execute(std::string code, std::string params) {
