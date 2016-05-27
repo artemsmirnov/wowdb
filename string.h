@@ -1,5 +1,5 @@
-#ifndef WOWDB_WOWSTRING_H
-#define WOWDB_WOWSTRING_H
+#ifndef WOWDB_STRING_H
+#define WOWDB_STRING_H
 
 #include <string>
 #include "leveldb/db.h"
@@ -22,4 +22,4 @@ namespace wow {
 }
 
 
-#endif //WOWDB_WOWSTRING_H
+#endif //WOWDB_STRING_H

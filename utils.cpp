@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "string.h"
 #include "object.h"
+#include "undefined.h"
 
 namespace wow {
     value* duk_get_value(leveldb::DB* db, duk_context *ctx, int idx) {
@@ -24,6 +25,8 @@ namespace wow {
 
             return new object(db, id);
         }
+
+        return new undefined();
     }
 
     value* get_value_by_id(leveldb::DB* db, std::string value_id) {
@@ -36,6 +39,8 @@ namespace wow {
                 return new string(db, value_id);
             case value_object:
                 return new object(db, value_id);
+            default:
+                return new undefined();
         }
     }
 }

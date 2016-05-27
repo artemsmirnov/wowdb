@@ -1,5 +1,5 @@
-#ifndef WOWDB_WOWVALUE_H
-#define WOWDB_WOWVALUE_H
+#ifndef WOWDB_VALUE_H
+#define WOWDB_VALUE_H
 
 #include <string>
 #include "duktape.h"
@@ -27,4 +27,4 @@ namespace wow {
 }
 
 
-#endif //WOWDB_WOWVALUE_H
+#endif //WOWDB_VALUE_H

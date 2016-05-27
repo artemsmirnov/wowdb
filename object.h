@@ -1,5 +1,5 @@
-#ifndef WOWDB_WOWOBJECT_H
-#define WOWDB_WOWOBJECT_H
+#ifndef WOWDB_OBJECT_H
+#define WOWDB_OBJECT_H
 
 #include <string>
 #include "leveldb/db.h"
@@ -26,4 +26,4 @@ namespace wow {
 }
 
 
-#endif //WOWDB_WOWOBJECT_H
+#endif //WOWDB_OBJECT_H

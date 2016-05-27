@@ -77,7 +77,7 @@ namespace wow {
 
     void object::put(const std::string key, value* val) {
         ensure();
-        //get(key)->destroy();
+        get(key)->destroy();
         val->ensure();
         db->Put(leveldb::WriteOptions(), id+"."+key, val->get_id());
     }
