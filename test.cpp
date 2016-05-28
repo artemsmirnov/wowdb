@@ -20,7 +20,7 @@ TEST(Store, ReturnNumber) {
             "(function(){return 0})",
             "{}"
         ),
-        "0"
+        "{\"result\":0}"
     );
 }
 
@@ -33,7 +33,7 @@ TEST(Store, PutString) {
                     "})",
                     "{}"
             ),
-            "\"bar\""
+            "{\"result\":\"bar\"}"
     );
 }
 
@@ -46,7 +46,7 @@ TEST(Store, PutNumber) {
                             "})",
                     "{}"
             ),
-            "2"
+            "{\"result\":2}"
     );
 }
 
@@ -60,7 +60,7 @@ TEST(Store, RewriteValue) {
                             "})",
                     "{}"
             ),
-            "2"
+            "{\"result\":2}"
     );
 }
 
@@ -90,7 +90,7 @@ TEST(Store, GetUndefined) {
                             "})",
                     "{}"
             ),
-            "{}"
+            "{\"result\":{}}"
     );
 }
 
@@ -104,7 +104,7 @@ TEST(Store, Remove) {
                             "})",
                     "{}"
             ),
-            "{}"
+            "{\"result\":{}}"
     );
 }
 
@@ -118,7 +118,7 @@ TEST(Store, RemoveUndefined) {
                             "})",
                     "{}"
             ),
-            "{\"test\":4}"
+            "{\"result\":{\"test\":4}}"
     );
 }
 
@@ -131,7 +131,7 @@ TEST(Store, GetKeysAfterRemove) {
                     "root.remove('foo');\n"
                     "return root.keys();\n"
                     "})",
-            "{}"
+            "{\"result\":{}}"
     );
 
     EXPECT_EQ(keys.find("foo"), std::string::npos);
@@ -149,7 +149,7 @@ TEST(Store, PutObjectInObject) {
                             "})",
                     "{}"
             ),
-            "{\"test\":4}"
+            "{\"result\":{\"test\":4}}"
     );
 }
 
@@ -164,7 +164,7 @@ TEST(Store, ObjectHas) {
                             "})",
                     "{}"
             ),
-            "{\"test\":true}"
+            "{\"result\":{\"test\":true}}"
     );
 }
 
@@ -179,7 +179,7 @@ TEST(Store, ObjectHasNot) {
                             "})",
                     "{}"
             ),
-            "{\"test\":false}"
+            "{\"result\":{\"test\":false}}"
     );
 }
 
@@ -192,7 +192,7 @@ TEST(Store, ArrayCreate) {
                             "})",
                     "{}"
             ),
-            "{\"test\":0}"
+            "{\"result\":{\"test\":0}}"
     );
 }
 
@@ -206,7 +206,7 @@ TEST(Store, ArrayInsert) {
                             "})",
                     "{}"
             ),
-            "{\"test\":1,\"x\":10}"
+            "{\"result\":{\"test\":1,\"x\":10}}"
     );
 }
 
@@ -221,7 +221,7 @@ TEST(Store, ArrayInsertShift) {
                             "})",
                     "{}"
             ),
-            "{\"test\":2,\"x\":5}"
+            "{\"result\":{\"test\":2,\"x\":5}}"
     );
 }
 
@@ -237,7 +237,7 @@ TEST(Store, ArrayRemove) {
                             "})",
                     "{}"
             ),
-            "{\"test\":1,\"x\":10}"
+            "{\"result\":{\"test\":1,\"x\":10}}"
     );
 }
 
