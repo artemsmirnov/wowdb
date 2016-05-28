@@ -183,6 +183,64 @@ TEST(Store, ObjectHasNot) {
     );
 }
 
+TEST(Store, ArrayCreate) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.array();\n"
+                            "return {test: a.length()};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":0}"
+    );
+}
+
+TEST(Store, ArrayInsert) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.array();\n"
+                            "a.insert(0, 10);\n"
+                            "return {test: a.length(), x:a.at(0)};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":1,\"x\":10}"
+    );
+}
+
+TEST(Store, ArrayInsertShift) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.array();\n"
+                            "a.insert(0, 10);\n"
+                            "a.insert(0, 5);\n"
+                            "return {test: a.length(), x:a.at(0)};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":2,\"x\":5}"
+    );
+}
+
+TEST(Store, ArrayRemove) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.array();\n"
+                            "a.insert(0, 10);\n"
+                            "a.insert(0, 5);\n"
+                            "a.remove(0);\n"
+                            "return {test: a.length(), x:a.at(0)};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":1,\"x\":10}"
+    );
+}
+
 int main(int ac, char* av[]) {
     testing::InitGoogleTest(&ac, av);
     return RUN_ALL_TESTS();

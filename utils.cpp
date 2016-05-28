@@ -1,8 +1,10 @@
 #include "utils.h"
 #include "string.h"
 #include "object.h"
+#include "array.h"
 #include "number.h"
 #include "undefined.h"
+#include <iostream>
 
 namespace wow {
     value* duk_get_value(leveldb::DB* db, duk_context *ctx, int idx) {
@@ -21,7 +23,9 @@ namespace wow {
         }
 
         if (duk_check_type(ctx, idx, DUK_TYPE_OBJECT)) {
-            // @TODO check .type property
+            duk_get_prop_string(ctx, idx, "type");
+            const char *type = duk_get_string(ctx, idx);
+            duk_pop(ctx);
 
             duk_get_prop_string(ctx, idx, "id");
             const char *id = duk_get_string(ctx, idx);
@@ -31,7 +35,13 @@ namespace wow {
 
             duk_pop_2(ctx); // [key]
 
-            return new object(db, id);
+            if (std::string("object") == type) {
+                return new object(db, id);
+            }
+
+            if (std::string("array") == type) {
+                return new array(db, id);
+            }
         }
 
         return new undefined();
@@ -40,6 +50,9 @@ namespace wow {
     value* get_value_by_id(leveldb::DB* db, std::string value_id) {
         std::string type_value;
         leveldb::Status s = db->Get(leveldb::ReadOptions(), value_id + "$$type", &type_value);
+        if (s.IsNotFound()) {
+            return new undefined();
+        }
         assert(s.ok());
 
         value_type *type = (wow::value_type*)type_value.c_str();
@@ -50,6 +63,8 @@ namespace wow {
                 return new number(db, value_id);
             case value_object:
                 return new object(db, value_id);
+            case value_array:
+                return new array(db, value_id);
             default:
                 return new undefined();
         }

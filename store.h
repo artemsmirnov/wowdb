@@ -4,6 +4,7 @@
 #include "leveldb/db.h"
 #include "duktape.h"
 #include "object.h"
+#include "array.h"
 
 namespace wow {
     class store {
@@ -13,6 +14,7 @@ namespace wow {
         ~store();
         std::string execute(std::string code, std::string params);
         object createObject() const;
+        array createArray() const;
         object root() const;
         void duk_push(duk_context *ctx) const;
     private:

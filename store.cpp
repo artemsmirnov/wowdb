@@ -15,8 +15,22 @@ namespace wow {
         return 1;
     }
 
+    duk_ret_t duk_store_create_array(duk_context *ctx) {
+        // [key]
+        duk_push_this(ctx); // [key this]
+
+        duk_get_prop_string(ctx, -1, "store"); // [key this this.id this.db]
+        store* str = (store*) duk_get_pointer(ctx, -1);
+        duk_pop_2(ctx); // [key]
+
+        str->createArray().duk_push(ctx);
+
+        return 1;
+    }
+
     const duk_function_list_entry store_methods[] = {
             { "object", duk_store_create_object, 0 },
+            { "array", duk_store_create_array, 0 },
             { NULL, NULL, 0 }
     };
 
@@ -62,6 +76,12 @@ namespace wow {
         object obj(db);
         obj.ensure();
         return obj;
+    }
+
+    array store::createArray() const {
+        array arr(db);
+        arr.ensure();
+        return arr;
     }
 
     object store::root() const {

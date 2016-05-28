@@ -6,16 +6,15 @@
 namespace wow {
     // duktape adapter
     object duk_get_this_object(duk_context *ctx) {
-        // [key]
-        duk_push_this(ctx); // [key this]
+        duk_push_this(ctx); // [this]
 
-        duk_get_prop_string(ctx, -1, "id"); // [key this this.id]
+        duk_get_prop_string(ctx, -1, "id"); // [this this.id]
         const char *id = duk_get_string(ctx, -1);
 
-        duk_get_prop_string(ctx, -2, "db"); // [key this this.id this.db]
+        duk_get_prop_string(ctx, -2, "db"); // [this this.id this.db]
         leveldb::DB* db = (leveldb::DB*) duk_get_pointer(ctx, -1);
 
-        duk_pop_3(ctx); // [key]
+        duk_pop_3(ctx); // []
 
         return object(db, id);
     }
