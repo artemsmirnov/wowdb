@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(SOURCE_FILES object.cpp object.h string.cpp string.h value.cpp value.h store.cpp store.h utils.cpp utils.h undefined.cpp undefined.h number.cpp number.h array.cpp array.h)
 
 add_executable(wowdb main.cpp ${SOURCE_FILES})
-target_link_libraries(wowdb duktape leveldb uuid)
+target_link_libraries(wowdb duktape leveldb uuid ${Boost_LIBRARIES})
 
 add_executable(wowdb_test test.cpp ${SOURCE_FILES})
-target_link_libraries(wowdb_test duktape leveldb uuid gtest)
+target_link_libraries(wowdb_test duktape leveldb uuid gtest ${Boost_LIBRARIES})
