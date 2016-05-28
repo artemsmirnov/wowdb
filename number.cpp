@@ -8,7 +8,7 @@ namespace wow {
         std::string raw_val;
         leveldb::Status s = db->Get(leveldb::ReadOptions(), id, &raw_val);
         assert(s.ok());
-        val = *(double*)raw_val.c_str(); // @TODO maybe we need free there
+        val = *(double*)raw_val.c_str();
     }
 
     number::number(leveldb::DB *_db) {

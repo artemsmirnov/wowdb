@@ -112,7 +112,7 @@ namespace wow {
 
         std::vector<std::string> keys;
 
-        // hack
+        // some legwork
         if (id == "root") {
             for (it->Seek(start); it->Valid() && it->key().ToString() < end; it->Next()) {
                 keys.push_back(it->key().ToString().substr(5)); // because of uuid length
@@ -140,14 +140,15 @@ namespace wow {
 
     void object::put(const std::string key, value* val) {
         ensure();
-        get(key)->destroy();
+        //get(key)->destroy();
         val->ensure();
         leveldb::Status s = db->Put(leveldb::WriteOptions(), id+"."+key, val->get_id());
         assert(s.ok());
     }
 
     void object::remove(const std::string key) const {
-        get(key)->destroy();
+        //@TODO enable link counter
+        //get(key)->destroy();
         leveldb::Status s = db->Delete(leveldb::WriteOptions(), id+"."+key);
         assert(s.ok());
     }
@@ -196,7 +197,5 @@ namespace wow {
 
         // set methods
         duk_put_function_list(ctx, -1, wow_object_methods);
-
-        // @TODO maybe we need to free(_id) here
     }
 }

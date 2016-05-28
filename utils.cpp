@@ -42,7 +42,7 @@ namespace wow {
         leveldb::Status s = db->Get(leveldb::ReadOptions(), value_id + "$$type", &type_value);
         assert(s.ok());
 
-        value_type *type = (wow::value_type*)type_value.c_str();  // @TODO maybe we need free there
+        value_type *type = (wow::value_type*)type_value.c_str();
         switch(*type) {
             case value_string:
                 return new string(db, value_id);

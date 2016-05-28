@@ -44,8 +44,6 @@ namespace wow {
     }
 
     void string::duk_push(duk_context *ctx) const {
-        const char* value_c_str = val.c_str();
-        duk_push_string(ctx, value_c_str);
-        //@TODO maybe free value_c_str
+        duk_push_string(ctx, val.c_str());
     }
 }
