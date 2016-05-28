@@ -63,8 +63,11 @@ namespace wow {
     }
 
     duk_ret_t duk_object_remove(duk_context *ctx) {
-        duk_push_number(ctx, 10);
-        return 1;
+        object obj = duk_get_this_object(ctx);
+        const char *key = duk_get_string(ctx, -1);
+        obj.remove(key);
+
+        return 0;
     }
 
     const duk_function_list_entry wow_object_methods[] = {

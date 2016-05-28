@@ -29,11 +29,127 @@ TEST(Store, PutString) {
             test_store_execute(
                     "(function(store, root, params){\n"
                     "root.put('foo', 'bar');\n"
-                    "return 'bar';\n"
+                    "return root.get('foo');\n"
                     "})",
                     "{}"
             ),
             "\"bar\""
+    );
+}
+
+TEST(Store, PutNumber) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "root.put('foo', 2);\n"
+                            "return root.get('foo');\n"
+                            "})",
+                    "{}"
+            ),
+            "2"
+    );
+}
+
+TEST(Store, RewriteValue) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "root.put('foo', 4);\n"
+                            "root.put('foo', 2);\n"
+                            "return root.get('foo');\n"
+                            "})",
+                    "{}"
+            ),
+            "2"
+    );
+}
+
+TEST(Store, GetKeys) {
+    std::string keys = test_store_execute(
+        "(function(store, root, params){\n"
+                "root.put('foo', 2);\n"
+                "root.put('bar', 4);\n"
+                "root.put('baz', 5);\n"
+                "return root.keys();\n"
+                "})",
+        "{}"
+    );
+
+    EXPECT_NE(keys.find("foo"), std::string::npos);
+    EXPECT_NE(keys.find("bar"), std::string::npos);
+    EXPECT_NE(keys.find("baz"), std::string::npos);
+}
+
+TEST(Store, GetUndefined) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "root.put('foo', 4);\n"
+                            "root.put('foo', 2);\n"
+                            "return {test: root.get('baz')};\n"
+                            "})",
+                    "{}"
+            ),
+            "{}"
+    );
+}
+
+TEST(Store, Remove) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "root.put('foo', 4);\n"
+                            "root.remove('foo');\n"
+                            "return {test: root.get('foo')};\n"
+                            "})",
+                    "{}"
+            ),
+            "{}"
+    );
+}
+
+TEST(Store, RemoveUndefined) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "root.put('foo', 4);\n"
+                            "root.remove('bar');\n"
+                            "return {test: root.get('foo')};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":4}"
+    );
+}
+
+
+TEST(Store, GetKeysAfterRemove) {
+    std::string keys = test_store_execute(
+            "(function(store, root, params){\n"
+                    "root.put('foo', 2);\n"
+                    "root.put('bar', 4);\n"
+                    "root.remove('foo');\n"
+                    "return root.keys();\n"
+                    "})",
+            "{}"
+    );
+
+    EXPECT_EQ(keys.find("foo"), std::string::npos);
+    EXPECT_NE(keys.find("bar"), std::string::npos);
+}
+
+TEST(Store, PutObjectInObject) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.object();\n"
+                            "a.put('foo', 4);\n"
+                            "root.put('a', a);;\n"
+                            "return {test: root.get('a').get('foo')};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":4}"
     );
 }
 
