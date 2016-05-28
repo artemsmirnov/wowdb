@@ -3,6 +3,8 @@
 #include <iostream>
 #include "store.h"
 #include "lib/crow.h"
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -22,8 +24,24 @@ int main(int argc, char *argv[]) {
 wow::store *stor;
 
 int main(int argc, char *argv[]) {
+
+    istringstream port_stream(argv[1]);
+    int port;
+    if (!(port_stream >> port)) {
+        cout << "wowdb [port] [path]\n";
+        return 1;
+    }
+
+    istringstream path_stream(argv[2]);
+    string path;
+    if (!(path_stream >> path)) {
+        cout << "wowdb [port] [path]\n";
+        return 1;
+    }
+
+
     crow::SimpleApp app;
-    stor = new wow::store("/tmp/testwow1");
+    stor = new wow::store(path);
 
     CROW_ROUTE(app, "/").methods("POST"_method)
     ([](const crow::request& req){
@@ -42,5 +60,5 @@ int main(int argc, char *argv[]) {
         );
     });
 
-    app.port(18080).run();
+    app.port(port).run();
 }
