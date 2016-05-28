@@ -153,6 +153,36 @@ TEST(Store, PutObjectInObject) {
     );
 }
 
+TEST(Store, ObjectHas) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.object();\n"
+                            "a.put('foo', 4);\n"
+                            "root.put('a', a);;\n"
+                            "return {test: root.get('a').has('foo')};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":true}"
+    );
+}
+
+TEST(Store, ObjectHasNot) {
+    EXPECT_EQ(
+            test_store_execute(
+                    "(function(store, root, params){\n"
+                            "var a = store.object();\n"
+                            "a.put('foo', 4);\n"
+                            "root.put('a', a);;\n"
+                            "return {test: root.get('a').has('foo1')};\n"
+                            "})",
+                    "{}"
+            ),
+            "{\"test\":false}"
+    );
+}
+
 int main(int ac, char* av[]) {
     testing::InitGoogleTest(&ac, av);
     return RUN_ALL_TESTS();

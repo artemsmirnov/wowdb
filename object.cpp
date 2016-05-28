@@ -58,7 +58,11 @@ namespace wow {
     }
 
     duk_ret_t duk_object_has(duk_context *ctx) {
-        duk_push_number(ctx, 10);
+        object obj = duk_get_this_object(ctx);
+        const char *key = duk_get_string(ctx, -1);
+
+        duk_push_boolean(ctx, obj.has(key));
+
         return 1;
     }
 
@@ -122,6 +126,16 @@ namespace wow {
         }
 
         return keys;
+    }
+
+    bool object::has(const std::string key) {
+        std::string value_id;
+        leveldb::Status s = db->Get(leveldb::ReadOptions(), id + "." + key, &value_id);
+        if (s.IsNotFound()) {
+            return false;
+        }
+        assert(s.ok());
+        return true;
     }
 
     void object::put(const std::string key, value* val) {
