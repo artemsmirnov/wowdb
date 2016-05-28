@@ -57,7 +57,15 @@ namespace wow {
 
     std::string store::execute(std::string code, std::string params) {
         duk_context *ctx = duk_create_heap_default();
-        duk_eval_string(ctx, code.c_str());
+        if (duk_peval_string(ctx, code.c_str()) != 0) {
+            duk_push_object(ctx);
+            duk_push_string(ctx, duk_safe_to_string(ctx, -2));
+            duk_put_prop_string(ctx, -2, "error");
+            std::string res = duk_json_encode(ctx, -1);
+            duk_destroy_heap(ctx);
+
+            return res;
+        }
 
         duk_push(ctx);
         root().duk_push(ctx);
@@ -65,11 +73,23 @@ namespace wow {
         duk_push_string(ctx, params.c_str());
         duk_json_decode(ctx, -1);
 
-        duk_call(ctx, 3);
-        std::string res = duk_json_encode(ctx, -1);
-        duk_destroy_heap(ctx);
+        if (duk_pcall(ctx, 3) == DUK_EXEC_SUCCESS) {
+            duk_push_object(ctx);
+            duk_dup(ctx, -2);
+            duk_put_prop_string(ctx, -2, "result");
 
-        return res;
+            std::string res = duk_json_encode(ctx, -1);
+            duk_destroy_heap(ctx);
+            return res;
+        } else {
+            duk_push_object(ctx);
+            duk_push_string(ctx, duk_safe_to_string(ctx, -2));
+            duk_put_prop_string(ctx, -2, "error");
+            std::string res = duk_json_encode(ctx, -1);
+            duk_destroy_heap(ctx);
+
+            return res;
+        }
     }
 
     object store::createObject() const {
